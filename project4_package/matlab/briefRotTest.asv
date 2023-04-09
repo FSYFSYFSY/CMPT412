@@ -1,0 +1,26 @@
+% Your solution to Q2.1.5 goes here!
+
+%% Read the image and convert to grayscale, if necessary
+Img1 = imread('../data/cv_cover.jpg');
+Img1 = im2double(im2gray(Img1));
+%% Compute the features and descriptors
+count = [];
+FT1 = detectFASTFeatures(Img1);
+[desc1,locs1] = computeBrief(Img1,FT1.Location);    
+
+for i = 0:36
+    %% Rotate image
+    Rot_img = imrotate(Img1, (i)*10);
+    %% Compute features and descriptors
+    R_FT1 = detectFASTFeatures(Rot_img);
+    [Rdesc1,Rlocs1] = computeBrief(Rot_img,R_FT1.Location);
+    %% Match features
+    indexPairs = matchFeatures(desc1, Rdesc1);
+    matchedPoints1 = Rlocs1(indexPairs(:,2),:);
+    %% Update histogram
+    count = [count, size(indexPairs(:,1),1)];
+end
+
+%% Display histogram
+figure()
+bar(count)
